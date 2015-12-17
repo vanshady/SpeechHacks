@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+
+        <!-- Include Moxtra JavaScript Library -->
+        <script type="text/javascript" src="https://www.moxtra.com/api/js/moxtra-latest.js" id="moxtrajs"></script>
+                <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+        <!-- Authenticate/Initialize and get the "Access Token" for the user -->
+        <!-- Refer to the doc at https://developer.moxtra.com/docs/docs-oauth/#uniqueid to authenticate user based on UniqueID Method -->
+        <!-- For other authentication methods and overview refer to the doc at https://developer.moxtra.com/docs/docs-authentication/ -->
+        <!-- In this example user is authenticated and access token is passed as a URL parameter -->
+ <script type="text/javascript" >
+           
+            function getToken(){
+                var access_token;
+        var client_id = "kDw16ZNxFhM";
+        var client_secret = "hpOp4raxp3I";
+        var uniqueid = "user" + Math.floor((Math.random() * 10) + 1);
+        var timestamp = new Date().getTime();
+        //var hash = CryptoJS.HmacSHA256(client_id + "" + uniqueid + "" + timestamp, client_secret);
+        //var signature = rtrim(strtr(CryptoJS.enc.Base64.stringify(hash), '+/', '-_'), '=');
+        var firstname = uniqueid;
+
+        $.ajax({
+            method: "POST",
+            url: "https://apisandbox.moxtra.com/oauth/token",
+            data: {
+                client_id: client_id,
+                client_secret: client_secret,
+                grant_type: "http://www.moxtra.com/auth_uniqueid",
+                uniqueid: uniqueid,
+                timestamp: timestamp,
+                //signature: signature,
+                firstname: firstname
+            },
+            async: false,
+            success: function(data, textStatus, jqXHR) {
+                access_token = data.access_token;
+               // alert(access_token);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(textStatus);
+            }
+        });
+            
+
+           // alert(access_token);
+            if (access_token) {
+                // Initialize Moxtra SDK Object
+                var options = {
+                    mode: "sandbox", 
+                    client_id: client_id, //
+                    access_token: access_token,
+                    invalid_token: function(event) {
+                        //Triggered when the access token is expired or invalid
+                       // alert("Access Token expired for session id: " + event.session_id);
+                    }
+                };
+                Moxtra.init(options);
+            }
+            else {
+                //Authenticate and get access token for the user before proceeding further
+                console.log ("No access token found");
+            }
+        }
+        </script>
+
+        <!-- Start Meet Function  -->
+        <script type="text/javascript">
+        function start_meet() {
+            var meet_options = {
+                iframe: true, //To open the meet in the same window within an iFrame.
+                // tab: true, //To open the meet in a new browser tab, N/A if iframe option is set to true.
+                tagid4iframe: "meet-container", //ID of the HTML tag within which the Meet window will show up. Refer https://developer.grouphour.com/moxo/docs-js-sdk/#meet
+                iframewidth: window.innerWidth-10,
+                iframeheight: "680px",
+                extension: { 
+                    "show_dialogs": { "meet_invite": true } 
+                },
+                start_meet: function(event) {
+                    console.log("Meet Started - session_id: "+event.session_id+"session_key: "+event.session_key);
+                    //Your application server can upload files to meet using the session_id and session_key
+                },
+                error: function(event) {
+                    console.log("error code: " + event.error_code + " message: " + event.error_message);
+                },
+                end_meet: function(event) {
+                    console.log("Meet Ended");
+                }
+            };
+            Moxtra.meet(meet_options);
+        }
+        </script>
+            
+    </head>
+    <body onload="getToken()">
+        <script>getToken(); href=start_meet();</script>
+        <div id="meet-container"></div>
+    </body>
+</html>

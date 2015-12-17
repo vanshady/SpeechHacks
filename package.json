@@ -1,0 +1,61 @@
+{
+  "name": "SpeechHacks",
+  "version": "2.0.0",
+  "description": "HackingEDU project",
+  "dependencies": {
+    "body-parser": "~1.14.1",
+    "cookie-parser": "^1.4.0",
+    "csurf": "^1.8.3",
+    "ejs": "^2.3.4",
+    "errorhandler": "^1.4.2",
+    "express": "~4.13.3",
+    "express-rate-limit": "^2.0.2",
+    "express-secure-only": "^0.2.1",
+    "helmet": "^0.13.0",
+    "i18next": "^1.10.6",
+    "morgan": "^1.6.1",
+    "request": "^2.67.0",
+    "vcap_services": "^0.1.7",
+    "watson-developer-cloud": "^0.10.6"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vanshady/HackingEDU"
+  },
+  "author": "Minwei Xu",
+  "browserify-shim": {
+    "jquery": "global:jQuery"
+  },
+  "browserify": {
+    "transform": [
+      "browserify-shim"
+    ]
+  },
+  "contributors": [
+    {
+      "name": "Minwei Xu",
+      "email": "mwxu@ucdavis.edu"
+    },
+    {
+      "name": "Dhanush Patel"
+    },
+    {
+      "name": "Raj Bhanushali"
+    }
+  ],
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/vanshady/HackingEDU/issues"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "build": "browserify src/index.js | uglifyjs -nc > public/js/index.js",
+    "watch": "watchify -v -d -o public/js/index.js src/index.js"
+  },
+  "devDependencies": {
+    "browserify": "^11.2.0",
+    "browserify-shim": "^3.8.9",
+    "watchify": "^3.2.3",
+    "uglifyjs": "^2.4.10"
+  }
+}
