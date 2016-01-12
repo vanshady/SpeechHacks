@@ -16,13 +16,13 @@
 
 'use strict';
 
-var express      = require('express'),
-    app          = express(),
+var express = require('express'),
+    app = express(),
     vcapServices = require('vcap_services'),
-    extend       = require('util')._extend,
-    watson       = require('watson-developer-cloud'),
-    bluemix      = require('./config/bluemix'),
-    i18n         = require('i18next');
+    extend = require('util')._extend,
+    watson = require('watson-developer-cloud'),
+    bluemix = require('./config/bluemix'),
+    i18n = require('i18next');
 
 //i18n settings
 require('./config/i18n')(app);
@@ -32,60 +32,60 @@ require('./config/express')(app);
 
 // For local development, replace username and password
 var config = extend({
-  version: 'v1',
-   "password": 'yourpassword',
-     "url": 'yoururl',
-     "username": 'yourname' 
+    version: 'v1',
+    "password": 'yourpassword',
+    "url": 'yoururl',
+    "username": 'yourname'
 }, vcapServices.getCredentials('speech_to_text'));
 
 var authService = watson.authorization(config);
 
-app.get('/', function(req, res) {
-  res.render('index', { ct: req._csrfToken });
+app.get('/', function (req, res) {
+    res.render('index', { ct: req._csrfToken });
 });
 
-app.get('/moxtra', function(req, res) {
-  res.render('moxtra', { ct: req._csrfToken });
+app.get('/moxtra', function (req, res) {
+    res.render('moxtra', { ct: req._csrfToken });
 });
 
-app.get('/meet', function(req, res) {
-  res.render('meet', { ct: req._csrfToken });
+app.get('/meet', function (req, res) {
+    res.render('meet', { ct: req._csrfToken });
 });
 
 // Get token using your credentials
-app.post('/api/token', function(req, res, next) {
-  authService.getToken({url: config.url}, function(err, token) {
-    if (err)
-      next(err);
-    else
-      res.send(token);
-  });
+app.post('/api/token', function (req, res, next) {
+    authService.getToken({ url: config.url }, function (err, token) {
+        if (err)
+            next(err);
+        else
+            res.send(token);
+    });
 });
 
 // if bluemix credentials exists, then override local
 var credentials = extend({
-  version: 'v2',
-  "password": 'yourpassowrd',
-     "url": 'someurl',
-     "username": 'yourname'
+    version: 'v2',
+    "password": 'yourpassowrd',
+    "url": 'someurl',
+    "username": 'yourname'
 }, bluemix.getServiceCreds('personality_insights')); // VCAP_SERVICES
 
 // Create the service wrapper
 var personalityInsights = watson.personality_insights(credentials);
 
-app.post('/', function(req, res, next) {
-  var parameters = extend(req.body, { acceptLanguage : i18n.lng() });
+app.post('/', function (req, res, next) {
+    var parameters = extend(req.body, { acceptLanguage: i18n.lng() });
 
-  personalityInsights.profile(parameters, function(err, profile) {
-    if (err)
-      return next(err);
-    else
-      return res.json(profile);
-  });
+    personalityInsights.profile(parameters, function (err, profile) {
+        if (err)
+            return next(err);
+        else
+            return res.json(profile);
+    });
 });
 
-app.get('/personality/', function(req, res, next) {
-  res.render('personality', { ct: req._csrfToken });
+app.get('/personality/', function (req, res, next) {
+    res.render('personality', { ct: req._csrfToken });
 });
 
 // error-handler settings
